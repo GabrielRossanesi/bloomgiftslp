@@ -1,0 +1,9 @@
+.next/
+out/
+node_modules/
+.agents/
+.env*
+!.env.example
+*.log
+Thumbs.db
+.DS_Store
