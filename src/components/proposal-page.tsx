@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, MotionConfig, motion, useScroll, useSpring } from "framer-motion";
 import type { Variants } from "framer-motion";
 import {
@@ -16,7 +16,6 @@ import {
   MousePointerClick,
   Package,
   Plus,
-  Send,
   ShoppingBag,
   Smartphone,
   Sparkles,
@@ -25,11 +24,9 @@ import {
 import {
   catalogProducts,
   challengePoints,
-  deliverables,
+  deliveryHighlights,
   flowSteps,
-  investmentHighlights,
   navItems,
-  outOfScope,
   solutionBlocks,
 } from "@/lib/proposal-data";
 
@@ -88,7 +85,7 @@ function SectionHeader({
     >
       <span
         className={cn(
-          "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold uppercase",
+          "neon-eyebrow inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold uppercase",
           light ? "border-white/20 bg-white/10 text-white/75" : "border-bloom-green/20 bg-white/70 text-bloom-graphite",
         )}
       >
@@ -138,34 +135,82 @@ function ButtonLink({
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const [darkHeader, setDarkHeader] = useState(true);
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
   const approvalHref = whatsappHref(approvalMessage);
 
+  useEffect(() => {
+    let frame = 0;
+
+    function updateTheme() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const sampleY = window.innerWidth >= 768 ? 92 : 76;
+        const darkSections = Array.from(document.querySelectorAll<HTMLElement>("[data-header-theme='dark']"));
+        const isDark = darkSections.some((section) => {
+          const rect = section.getBoundingClientRect();
+          return rect.top <= sampleY && rect.bottom >= sampleY;
+        });
+
+        setDarkHeader(isDark);
+      });
+    }
+
+    updateTheme();
+    window.addEventListener("scroll", updateTheme, { passive: true });
+    window.addEventListener("resize", updateTheme);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateTheme);
+      window.removeEventListener("resize", updateTheme);
+    };
+  }, []);
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3 md:px-6 md:pt-4">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.35rem] border border-[#e1d5c2] bg-[#fbf7ef] shadow-[0_14px_42px_rgba(31,29,32,0.12)]">
-        <div className="h-1 bg-[#eadfcd]">
+      <div
+        className={cn(
+          "mx-auto max-w-7xl overflow-hidden rounded-[1.35rem] border shadow-[0_14px_42px_rgba(31,29,32,0.13)] transition-colors duration-500",
+          darkHeader ? "border-white/10 bg-[#272523]/95 text-white" : "border-[#e1d5c2] bg-[#fbf7ef] text-bloom-graphite",
+        )}
+      >
+        <div className={cn("h-1 transition-colors duration-500", darkHeader ? "bg-white/10" : "bg-[#eadfcd]")}>
           <motion.div className="h-full origin-left bg-bloom-green" style={{ scaleX: progress }} />
         </div>
 
         <div className="grid min-h-[4.65rem] grid-cols-[1fr_auto] items-center gap-4 px-4 py-3 md:grid-cols-[1fr_auto_1fr] md:px-5">
           <a href="#topo" className="flex min-w-0 items-center gap-3" aria-label="Voltar ao início">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#f5ebdc] shadow-[0_8px_20px_rgba(31,29,32,0.08)] ring-1 ring-[#d8c8ae]">
-              <Image src={moralesMarkSrc} alt="Morales Soluções" width={36} height={36} className="h-8 w-8 object-contain" priority />
+            <span
+              className={cn(
+                "flex h-11 w-11 shrink-0 items-center justify-center rounded-full shadow-[0_8px_20px_rgba(31,29,32,0.08)] ring-1 transition-colors duration-500",
+                darkHeader ? "bg-white/[0.08] ring-white/[0.12]" : "bg-[#f5ebdc] ring-[#d8c8ae]",
+              )}
+            >
+              <Image src={moralesMarkSrc} alt="Morales Soluções" width={36} height={36} className={cn("h-8 w-8 object-contain", darkHeader && "brightness-0 invert")} priority />
             </span>
             <span className="min-w-0 leading-tight">
-              <span className="block truncate text-sm font-extrabold text-bloom-graphite">Bloom Gifts</span>
-              <span className="block truncate text-xs font-semibold text-[#6f685d]">Landing Page + Catálogo</span>
+              <span className={cn("block truncate text-sm font-extrabold transition-colors duration-500", darkHeader ? "text-white" : "text-bloom-graphite")}>Bloom Gifts</span>
+              <span className={cn("block truncate text-xs font-semibold transition-colors duration-500", darkHeader ? "text-white/55" : "text-[#6f685d]")}>Landing Page + Catálogo</span>
             </span>
           </a>
 
-          <nav className="hidden items-center justify-center gap-1 rounded-full border border-[#e4d8c5] bg-[#f6eee2] p-1 lg:flex" aria-label="Navegação principal">
+          <nav
+            className={cn(
+              "hidden items-center justify-center gap-1 rounded-full border p-1 transition-colors duration-500 lg:flex",
+              darkHeader ? "border-white/10 bg-white/[0.08]" : "border-[#e4d8c5] bg-[#f6eee2]",
+            )}
+            aria-label="Navegação principal"
+          >
             {navItems.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="rounded-full px-4 py-2 text-sm font-bold text-[#4f4a43] transition hover:bg-white hover:text-bloom-graphite hover:shadow-[0_8px_18px_rgba(31,29,32,0.07)]"
+                className={cn(
+                  "rounded-full px-4 py-2 text-sm font-bold transition hover:shadow-[0_8px_18px_rgba(31,29,32,0.07)]",
+                  darkHeader ? "text-white/[0.76] hover:bg-white/10 hover:text-white" : "text-[#4f4a43] hover:bg-white hover:text-bloom-graphite",
+                )}
               >
                 {item.label}
               </a>
@@ -173,14 +218,17 @@ function Header() {
           </nav>
 
           <div className="hidden justify-end md:flex">
-            <ButtonLink href={approvalHref} icon="whatsapp">
+            <ButtonLink href={approvalHref} variant={darkHeader ? "light" : "primary"} icon="whatsapp">
               Aprovar proposta
             </ButtonLink>
           </div>
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d8c8ae] bg-[#fffaf2] text-bloom-graphite shadow-[0_8px_18px_rgba(31,29,32,0.08)] md:hidden"
+            className={cn(
+              "inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-[0_8px_18px_rgba(31,29,32,0.08)] transition-colors duration-500 md:hidden",
+              darkHeader ? "border-white/[0.12] bg-white/[0.08] text-white" : "border-[#d8c8ae] bg-[#fffaf2] text-bloom-graphite",
+            )}
             onClick={() => setOpen((value) => !value)}
             aria-label={open ? "Fechar menu" : "Abrir menu"}
             aria-expanded={open}
@@ -192,7 +240,7 @@ function Header() {
         <AnimatePresence>
           {open ? (
             <motion.div
-              className="border-t border-[#e4d8c5] bg-[#fbf7ef] px-4 pb-4 pt-2 md:hidden"
+              className={cn("border-t px-4 pb-4 pt-2 transition-colors duration-500 md:hidden", darkHeader ? "border-white/10 bg-[#272523]" : "border-[#e4d8c5] bg-[#fbf7ef]")}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
@@ -202,7 +250,7 @@ function Header() {
                   <a
                     key={item.href}
                     href={item.href}
-                    className="rounded-xl px-3 py-3 text-sm font-bold text-bloom-graphite transition hover:bg-[#f1e5d3]"
+                    className={cn("rounded-xl px-3 py-3 text-sm font-bold transition", darkHeader ? "text-white/[0.82] hover:bg-white/10 hover:text-white" : "text-bloom-graphite hover:bg-[#f1e5d3]")}
                     onClick={() => setOpen(false)}
                   >
                     {item.label}
@@ -276,7 +324,7 @@ function Hero() {
   const approvalHref = whatsappHref(approvalMessage);
 
   return (
-    <section id="topo" className="relative overflow-hidden bg-bloom-graphite text-white">
+    <section id="topo" data-header-theme="dark" className="relative overflow-hidden bg-bloom-graphite text-white">
       <div className="hero-mesh absolute inset-0" />
       <div className="premium-noise" />
       <Image
@@ -291,7 +339,7 @@ function Hero() {
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-36 md:grid-cols-[0.95fr_1.05fr] md:px-8 md:pb-20 md:pt-40">
         <div className="relative z-10">
-          <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold text-white/70">
+          <div className="neon-eyebrow mb-6 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-bold uppercase text-white/70">
             <Sparkles className="h-4 w-4 text-bloom-champagne" aria-hidden="true" />
             Proposta comercial objetiva
           </div>
@@ -349,7 +397,7 @@ function Challenge() {
 
 function Solution() {
   return (
-    <section id="solucao" className="relative overflow-hidden bg-bloom-graphite px-5 py-16 text-white md:px-8 md:py-24">
+    <section id="solucao" data-header-theme="dark" className="relative overflow-hidden bg-bloom-graphite px-5 py-16 text-white md:px-8 md:py-24">
       <div className="hero-mesh absolute inset-0 opacity-80" />
       <div className="premium-noise" />
       <div className="relative mx-auto max-w-7xl">
@@ -484,7 +532,7 @@ function Flow() {
     <section className="px-5 pb-16 md:px-8 md:pb-24">
       <div className="mx-auto max-w-7xl">
         <SectionHeader eyebrow="Como vai funcionar" title="Um fluxo simples, claro e direto" />
-        <motion.div className="mt-10 grid gap-4 md:grid-cols-4" initial="hidden" whileInView="visible" viewport={viewport} variants={stagger}>
+        <motion.div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5" initial="hidden" whileInView="visible" viewport={viewport} variants={stagger}>
           {flowSteps.map((step, index) => (
             <motion.article key={step.title} className="relative rounded-lg border border-bloom-ink/10 bg-white/75 p-5 shadow-[0_18px_50px_rgba(31,29,32,0.06)]" variants={fadeUp}>
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-bloom-graphite text-sm font-extrabold text-bloom-champagne">
@@ -500,89 +548,49 @@ function Flow() {
   );
 }
 
-function Scope() {
-  return (
-    <section className="px-5 pb-16 md:px-8 md:pb-24">
-      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-2">
-        <motion.div className="rounded-lg border border-bloom-ink/10 bg-white/75 p-6 shadow-[0_20px_60px_rgba(31,29,32,0.07)] md:p-8" initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
-          <h2 className="text-3xl font-extrabold text-bloom-graphite">O que está incluso</h2>
-          <div className="mt-6 grid gap-3">
-            {deliverables.map((item) => (
-              <div key={item} className="flex gap-3">
-                <Check className="mt-1 h-5 w-5 shrink-0 text-bloom-green" aria-hidden="true" />
-                <p className="text-sm font-bold leading-6 text-[#55564f]">{item}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-6 rounded-lg bg-bloom-porcelain p-4 text-sm font-semibold leading-6 text-[#62645f]">
-            Cadastro, edição ou atualização recorrente de produtos após a entrega não está incluso como rotina mensal, salvo contratação adicional.
-          </p>
-        </motion.div>
-
-        <motion.div className="rounded-lg border border-bloom-ink/10 bg-bloom-graphite p-6 text-white shadow-[0_20px_60px_rgba(31,29,32,0.12)] md:p-8" initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
-          <h2 className="text-3xl font-extrabold">O que não está incluso nesta proposta</h2>
-          <div className="mt-6 grid gap-3">
-            {outOfScope.map((item) => (
-              <div key={item} className="flex gap-3">
-                <X className="mt-1 h-5 w-5 shrink-0 text-bloom-champagne" aria-hidden="true" />
-                <p className="text-sm font-bold leading-6 text-white/70">{item}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-6 rounded-lg border border-white/10 bg-white/10 p-4 text-sm font-semibold leading-6 text-white/70">
-            Esses recursos podem ser avaliados futuramente em uma proposta separada, caso a Bloom queira evoluir a solução.
-          </p>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function Investment() {
+function Delivery() {
   const approvalHref = whatsappHref(approvalMessage);
 
   return (
-    <section id="investimento" className="relative overflow-hidden bg-bloom-graphite px-5 py-16 text-white md:px-8 md:py-24">
+    <section id="entrega" data-header-theme="dark" className="relative overflow-hidden bg-bloom-graphite px-5 py-16 text-white md:px-8 md:py-24">
       <div className="hero-mesh absolute inset-0 opacity-80" />
       <div className="premium-noise" />
-      <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <div className="relative mx-auto max-w-5xl">
         <SectionHeader
-          align="left"
           light
-          eyebrow="Investimento"
-          title="R$ 2.500,00"
-          text="Desenvolvimento da nova landing page com catálogo e direcionamento personalizado para WhatsApp."
+          eyebrow="Entrega"
+          title="Entrega final organizada para publicação"
+          text="A proposta concentra os principais entregáveis da nova landing page com catálogo, fluxo de seleção e direcionamento para WhatsApp."
         />
 
-        <motion.div className="rounded-lg border border-white/10 bg-white/10 p-6 backdrop-blur-md md:p-8" initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
+        <motion.div className="mx-auto mt-10 max-w-4xl rounded-lg border border-white/10 bg-white/10 p-6 text-center backdrop-blur-md md:p-8" initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
           <div className="grid gap-3 sm:grid-cols-2">
-            {investmentHighlights.map((item) => (
-              <div key={item} className="flex gap-3 rounded-lg bg-white/10 p-4">
+            {deliveryHighlights.map((item) => (
+              <div key={item} className="flex items-start gap-3 rounded-lg bg-white/10 p-4 text-left">
                 <Check className="mt-1 h-5 w-5 shrink-0 text-bloom-champagne" aria-hidden="true" />
                 <p className="text-sm font-bold leading-6 text-white/75">{item}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <div className="rounded-lg border border-white/10 p-5">
-              <Clock3 className="h-5 w-5 text-bloom-champagne" aria-hidden="true" />
-              <h3 className="mt-3 text-lg font-extrabold">Prazo de desenvolvimento</h3>
-              <p className="mt-3 text-sm font-semibold leading-6 text-white/70">
-                Prazo estimado de até 20 dias úteis, considerando alinhamento inicial, desenvolvimento, ajustes finais e publicação.
-              </p>
-            </div>
-            <div className="rounded-lg border border-white/10 p-5">
-              <Send className="h-5 w-5 text-bloom-champagne" aria-hidden="true" />
-              <h3 className="mt-3 text-lg font-extrabold">Condição sugerida</h3>
-              <p className="mt-3 text-sm font-semibold leading-6 text-white/70">50% para início do projeto e 50% na entrega/publicação.</p>
+          <div className="mt-6 rounded-lg border border-white/10 bg-bloom-graphite/35 p-5 text-left">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bloom-champagne text-bloom-graphite">
+                <Clock3 className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="text-lg font-extrabold">Prazo de desenvolvimento</h3>
+                <p className="mt-3 text-sm font-semibold leading-6 text-white/70">
+                  Prazo estimado de até 20 dias úteis, considerando alinhamento inicial, desenvolvimento, ajustes finais e publicação.
+                </p>
+              </div>
             </div>
           </div>
 
           <p className="mt-5 text-xs font-semibold leading-6 text-white/50">
             O prazo pode variar conforme o envio de imagens, informações dos produtos e retornos necessários para fechamento.
           </p>
-          <div className="mt-7">
+          <div className="mt-7 flex justify-center">
             <ButtonLink href={approvalHref} variant="light" icon="whatsapp">
               Aprovar proposta
             </ButtonLink>
@@ -595,7 +603,7 @@ function Investment() {
 
 function FinalCta() {
   return (
-    <section className="px-5 py-16 md:px-8 md:py-24">
+    <section className="bg-bloom-porcelain px-5 py-16 md:px-8 md:py-24">
       <motion.div
         className="mx-auto max-w-5xl rounded-lg border border-bloom-ink/10 bg-white/80 p-7 text-center shadow-[0_24px_80px_rgba(31,29,32,0.08)] md:p-12"
         initial="hidden"
@@ -624,7 +632,7 @@ function FinalCta() {
 
 function Footer() {
   return (
-    <footer className="border-t border-bloom-ink/8 bg-bloom-porcelain px-5 py-10 md:px-8">
+    <footer className="border-t border-[#e4d8c5] bg-bloom-porcelain px-5 py-10 md:px-8">
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
         <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_12px_32px_rgba(31,29,32,0.08)] ring-1 ring-bloom-ink/5">
           <Image src={moralesMarkSrc} alt="Morales Soluções" width={34} height={34} className="h-8 w-8 object-contain" />
@@ -656,8 +664,7 @@ export function ProposalPage() {
         <Solution />
         <CatalogDemo />
         <Flow />
-        <Scope />
-        <Investment />
+        <Delivery />
         <FinalCta />
         <Footer />
       </main>

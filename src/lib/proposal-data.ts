@@ -2,13 +2,14 @@ export const navItems = [
   { label: "Desafio", href: "#desafio" },
   { label: "Solução", href: "#solucao" },
   { label: "Catálogo", href: "#catalogo" },
-  { label: "Investimento", href: "#investimento" },
+  { label: "Entrega", href: "#entrega" },
 ];
 
 export const challengePoints = [
   "Página mais clara e visualmente alinhada à marca",
   "Melhor apresentação dos produtos",
   "Processo de interesse mais simples para o cliente",
+  "Acesso restrito apenas para usuários previamente cadastrados",
   "Direcionamento rápido para o WhatsApp",
   "Experiência melhor no celular",
 ];
@@ -55,34 +56,13 @@ export const flowSteps = [
     text: "O cliente escolhe quais itens deseja e informa a quantidade de cada produto.",
   },
   {
+    title: "Aprovação do gerente geral",
+    text: "Antes do envio final, o pedido pode passar pela validação de um gerente geral da franquiadora, garantindo mais controle sobre as solicitações realizadas.",
+  },
+  {
     title: "Envia pelo WhatsApp",
     text: "Ao clicar no botão, o WhatsApp abre com uma mensagem personalizada contendo os produtos e quantidades selecionados.",
   },
-];
-
-export const deliverables = [
-  "Recriação visual da página da Bloom Gifts",
-  "Desenvolvimento de landing page responsiva",
-  "Página/seção de catálogo de produtos",
-  "Cards de produtos com seleção de quantidade",
-  "Botão de envio para WhatsApp",
-  "Mensagem personalizada automática com itens selecionados",
-  "Ajustes de responsividade para celular, tablet e desktop",
-  "Publicação inicial da página",
-  "Suporte inicial após entrega",
-];
-
-export const outOfScope = [
-  "Ambiente interno com acesso restrito",
-  "Ferramenta administrativa para edição contínua",
-  "Controle de inventário",
-  "Checkout ou cobrança integrada",
-  "Integrações com sistemas externos",
-  "Área individual para clientes",
-  "Fluxos internos de validação",
-  "Automações avançadas",
-  "Rotina mensal contínua",
-  "Cadastro recorrente de novos produtos após a entrega",
 ];
 
 export const catalogProducts = [
@@ -112,7 +92,7 @@ export const catalogProducts = [
   },
 ];
 
-export const investmentHighlights = [
+export const deliveryHighlights = [
   "Landing page responsiva",
   "Catálogo com seleção de quantidade",
   "WhatsApp com mensagem personalizada",
