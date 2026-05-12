@@ -192,7 +192,10 @@ function Header() {
             </span>
             <span className="min-w-0 leading-tight">
               <span className={cn("block truncate text-sm font-extrabold transition-colors duration-500", darkHeader ? "text-white" : "text-bloom-graphite")}>Bloom Gifts</span>
-              <span className={cn("block truncate text-xs font-semibold transition-colors duration-500", darkHeader ? "text-white/55" : "text-[#6f685d]")}>Landing Page + Catálogo</span>
+              <span className={cn("block truncate text-xs font-bold tracking-[0.08em] transition-colors duration-500", darkHeader ? "text-white/70" : "text-[#6f685d]")}>
+                <span className={cn("font-extrabold", darkHeader ? "text-bloom-champagne drop-shadow-[0_0_8px_rgba(253,220,152,0.24)]" : "text-bloom-green")}>Amaze</span>{" "}
+                Travel
+              </span>
             </span>
           </a>
 
